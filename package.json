@@ -1,0 +1,81 @@
+{
+  "name": "gpt-4-free",
+  "displayName": "gpt4o-free",
+  "description": "VSCode integration of GPT 4o",
+  "version": "0.0.2",
+  "engines": {
+    "vscode": "^1.94.0"
+  },
+  "categories": [
+    "Other"
+  ],
+  "activationEvents": [
+    "onView:gpt4oChatView"
+  ],
+  "main": "./out/extension.js",
+  "contributes": {
+    "viewsContainers": {
+      "activitybar": [
+        {
+          "id": "gpt4oChat",
+          "title": "GPT 4o",
+          "icon": "media/chatbot-icon.svg"
+        }
+      ]
+    },
+    "views": {
+      "gpt4oChat": [
+        {
+          "id": "gpt4oChatView",
+          "name": "Chat with GPT 4o",
+          "type": "webview"
+        }
+      ]
+    },
+    "configuration": {
+      "properties": {
+        "chatgpt.apiKey": {
+          "type": "string",
+          "default": "",
+          "description": "OpenAI API Key for ChatGPT integration"
+        },
+        "chatgpt.baseFolder": {
+          "type": "string",
+          "default": "src",
+          "description": "Base folder from which to gather files for the ChatGPT extension"
+        }
+      }
+    },
+    
+    "commands": [
+             {
+                 "command": "extension.mergeRefactoredFile",
+                 "title": "Save and Merge Refactored File"
+             }
+         ]
+  },
+  "scripts": {
+    "vscode:prepublish": "npm run compile",
+    "compile": "tsc -p ./",
+    "watch": "tsc -watch -p ./",
+    "pretest": "npm run compile && npm run lint",
+    "lint": "eslint src",
+    "test": "vscode-test"
+  },
+  "devDependencies": {
+    "@types/mocha": "^10.0.8",
+    "@types/node": "20.x",
+    "@types/vscode": "^1.94.0",
+    "@typescript-eslint/eslint-plugin": "^8.7.0",
+    "@typescript-eslint/parser": "^8.7.0",
+    "@vscode/test-cli": "^0.0.10",
+    "@vscode/test-electron": "^2.4.1",
+    "eslint": "^9.11.1",
+    "typescript": "^5.6.2"
+  },
+  "dependencies": {
+    "axios": "^1.7.7",
+    "marked": "^14.1.2",
+    "openai": "^4.67.3"
+  }
+}

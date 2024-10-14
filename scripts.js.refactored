@@ -1,0 +1,193 @@
+const vscode = acquireVsCodeApi();
+let isLoading = false;
+const choices = new Choices('#fileSelect', { removeItemButton: true });
+const HISTORY_KEY = 'chatHistory';
+const FILE_KEY = 'selectedFiles';
+let currentHistoryIndex = -1; 
+let chatHistory = [];
+
+choices.passedElement.element.addEventListener('showDropdown', () => {
+    vscode.postMessage({ type: 'getOpenFiles' });
+});
+
+window.onload = () => {
+    loadHistory();
+    loadSelectedFiles();
+};
+
+window.addEventListener('message', event => {
+    const { type, files, text, comments } = event.data;
+
+    if (type === 'fileList') {
+        const currentSelections = choices.getValue(true);
+        choices.clearChoices();
+        choices.setChoices(files.map(file => ({
+            value: file,
+            label: file.split('/').pop(),
+            selected: currentSelections.includes(file)
+        })), 'value', 'label', false);
+        choices.setChoiceByValue(currentSelections);
+    }
+
+    if (type === 'response' || type === 'refactorResponse') {
+        removeLoadingIndicator();
+        addMessageToChat(type === 'response' ? text : comments, false);
+        isLoading = false;
+    }
+});
+
+document.getElementById('menu-button').addEventListener('click', () => {
+    document.getElementById('action-menu').classList.toggle('hidden');
+});
+
+document.getElementById('refactorOption').addEventListener('click', () => {
+    const selectedFiles = choices.getValue(true);
+    const userInput = document.getElementById('input').value.trim() || "Please refactor the following files.";
+
+    if (selectedFiles.length === 0 || isLoading) return;
+
+    isLoading = true;
+    addLoadingIndicator();
+
+    saveToHistory(userInput, true);
+    addMessageToChat(userInput, true);
+    
+    vscode.postMessage({ type: 'refactorFiles', files: selectedFiles, text: userInput });
+
+    const menu = document.getElementById('action-menu');
+    menu.classList.add('hidden');
+});
+
+document.getElementById('clearHistoryOption').addEventListener('click', () => {
+    localStorage.removeItem(HISTORY_KEY);
+    document.getElementById('response').innerHTML = '';
+    const menu = document.getElementById('action-menu');
+    menu.classList.add('hidden');
+});
+
+function addMessageToChat(text, isUser) {
+    const responseDiv = document.getElementById('response');
+    const newResponse = document.createElement('div');
+    newResponse.className = 'response-item' + (isUser ? ' user' : '');
+    newResponse.innerHTML = isUser ? `<pre>${text}</pre>` : marked.parse(text);
+    newResponse.classList.add('show');
+    responseDiv.appendChild(newResponse);
+    responseDiv.scrollTop = responseDiv.scrollHeight;
+}
+
+function addLoadingIndicator() {
+    const responseDiv = document.getElementById('response');
+    const loadingIndicator = document.createElement('div');
+    loadingIndicator.id = 'loading';
+    loadingIndicator.className = 'response-item loading';
+    loadingIndicator.textContent = 'Thinking...';
+    responseDiv.appendChild(loadingIndicator);
+    responseDiv.scrollTop = responseDiv.scrollHeight;
+}
+
+async function removeLoadingIndicator() {
+    const loadingIndicator = document.getElementById('loading');
+    if (loadingIndicator) loadingIndicator.remove();
+    isLoading = false;
+}
+
+function loadHistory() {
+    chatHistory = JSON.parse(localStorage.getItem(HISTORY_KEY)) || [];
+    chatHistory.forEach(entry => {
+        addMessageToChat(entry.text, entry.isUser);
+    });
+}
+
+function saveToHistory(text, isUser) {
+    const history = JSON.parse(localStorage.getItem(HISTORY_KEY)) || [];
+    history.push({ text, isUser });
+    chatHistory.push({ text, isUser });
+    localStorage.setItem(HISTORY_KEY, JSON.stringify(history));
+}
+
+function loadSelectedFiles() {
+    const selectedFiles = JSON.parse(localStorage.getItem(FILE_KEY)) || [];
+    choices.setChoiceByValue(selectedFiles);
+}
+
+document.getElementById('fileSelect').addEventListener('change', () => {
+    const selectedFiles = choices.getValue(true);
+    localStorage.setItem(FILE_KEY, JSON.stringify(selectedFiles));
+});
+
+document.getElementById('searchInput').addEventListener('input', performSearch);
+document.getElementById('searchNext').addEventListener('click', () => navigateSearch(1));
+document.getElementById('searchPrev').addEventListener('click', () => navigateSearch(-1));
+
+function performSearch() {
+    const searchTerm = document.getElementById('searchInput').value.trim();
+    const responseItems = document.getElementById('response').querySelectorAll('.response-item');
+    matches = [];
+    currentMatchIndex = 0;
+
+    responseItems.forEach(item => {
+        item.innerHTML = item.innerHTML.replace(/<mark>/g, '').replace(/<\/mark>/g, '');
+    });
+
+    if (searchTerm === '') return;
+
+    responseItems.forEach(item => {
+        const regex = new RegExp(searchTerm, 'gi');
+        let match;
+        while ((match = regex.exec(item.textContent)) !== null) {
+            matches.push({ item, index: match.index });
+        }
+        item.innerHTML = item.textContent.replace(regex, '<mark>$&</mark>');
+    });
+
+    matchCount = matches.length;
+    if (matchCount > 0) navigateSearch(0);
+}
+
+function navigateSearch(direction) {
+    if (matchCount === 0) return;
+
+    currentMatchIndex = (currentMatchIndex + direction + matchCount) % matchCount;
+    const currentMatch = matches[currentMatchIndex];
+    currentMatch.item.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    document.getElementById('response').querySelectorAll('mark').forEach((mark, index) => {
+        mark.classList.toggle('active-match', index === currentMatchIndex);
+    });
+}
+
+document.getElementById('input').addEventListener('keydown', function(event) {
+    if (event.key === 'ArrowUp') {
+        event.preventDefault();
+        if (currentHistoryIndex < chatHistory.filter(entry => entry.isUser).length - 1) {
+            currentHistoryIndex++;
+            const userMessage = chatHistory.filter(entry => entry.isUser)[chatHistory.filter(entry => entry.isUser).length - 1 - currentHistoryIndex];
+            document.getElementById('input').value = userMessage ? userMessage.text : '';
+        }
+    } else if (event.key === 'ArrowDown') {
+        event.preventDefault();
+        if (currentHistoryIndex > 0) {
+            currentHistoryIndex--;
+            const userMessage = chatHistory.filter(entry => entry.isUser)[chatHistory.filter(entry => entry.isUser).length - 1 - currentHistoryIndex];
+            document.getElementById('input').value = userMessage ? userMessage.text : '';
+        } else if (currentHistoryIndex === 0) {
+            currentHistoryIndex = -1;
+            document.getElementById('input').value = '';
+        }
+    }
+
+    if (event.key === 'Enter' && !event.shiftKey) {
+        event.preventDefault();
+        const input = document.getElementById('input').value;
+        const selectedFiles = choices.getValue(true);
+
+        if (!input.trim() || isLoading) return;
+
+        isLoading = true;
+        addLoadingIndicator();
+        saveToHistory(input, true);
+        addMessageToChat(input, true);
+        vscode.postMessage({ type: 'askGPT', text: input, files: selectedFiles });
+        document.getElementById('input').value = '';
+        currentHistoryIndex = -1;
+    }
+});
