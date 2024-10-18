@@ -72,16 +72,59 @@ export class GPT4oWebviewViewProvider implements vscode.WebviewViewProvider {
     }
 
     // Get the list of currently open files in the workspace
-    private getOpenFiles(): string[] {
+    private getOpenFiles(): { fullPath: string, displayName: string }[] {
         const openTextDocuments = vscode.workspace.textDocuments;
-        return openTextDocuments.map(doc => doc.uri.fsPath);
+        const fileCounts: { [fileName: string]: number } = {}; // Track how often each file name appears
+    
+        const files = openTextDocuments
+            .map(doc => doc.uri.fsPath)
+            .filter(filePath => 
+                !filePath.includes('/.git/') &&
+                !filePath.includes('/node_modules/') &&
+                !filePath.startsWith('.') &&
+                !filePath.endsWith('.lock') &&
+                path.extname(filePath) !== '' // Ensure the file has an extension
+            );
+    
+        // Build a count of how many times each file name occurs
+        files.forEach(filePath => {
+            const fileName = path.basename(filePath);
+            fileCounts[fileName] = (fileCounts[fileName] || 0) + 1;
+        });
+    
+        // Adjust filenames to include more of the path if necessary for disambiguation
+        const disambiguatedFiles = files.map(filePath => {
+            const fileName = path.basename(filePath);
+            if (fileCounts[fileName] > 1) {
+                // If multiple files have the same name, include part of the directory structure
+                const workspaceFolder = vscode.workspace.workspaceFolders?.[0]?.uri.fsPath || '';
+                const relativePath = path.relative(workspaceFolder, filePath);
+                const splitPath = relativePath.split(path.sep);
+                const displayName = splitPath.slice(-2).join(path.sep); // show the last two parts of the path for disambiguation
+                return { fullPath: filePath, displayName };
+            } else {
+                return { fullPath: filePath, displayName: fileName };
+            }
+        });
+    
+        return disambiguatedFiles;
     }
+    
+    
+    
 
     // Interact with ChatGPT API
     private async askChatGPT(question: string, files: string[]): Promise<string | null> {
         const apiKey = vscode.workspace.getConfiguration('chatgpt').get<string>('apiKey');
-
         const openai = new OpenAI({ apiKey });
+        
+        let model;
+        if(files.length > 0) {
+            model = vscode.workspace.getConfiguration('chatgpt').get<string>('modelChat') || 'gpt-4o-mini';
+        } else {
+            model = vscode.workspace.getConfiguration('chatgpt').get<string>('modelChatWithFiles') || 'gpt-4o-mini';
+        }
+        
 
         let fileContents = '';
 
@@ -119,7 +162,7 @@ export class GPT4oWebviewViewProvider implements vscode.WebviewViewProvider {
 
         try {
             const completion = await openai.chat.completions.create({
-                model: "gpt-4o-mini",
+                model,
                 messages: [
                     { role: "system", content: "You are a helpful assistant." },
                     { role: "user", content: fullPrompt },
@@ -136,6 +179,7 @@ export class GPT4oWebviewViewProvider implements vscode.WebviewViewProvider {
     private async refactorFiles(files: string[], userInput?: string): Promise<{ refactoredCode: string | null, comments: string | null }> {
         const apiKey = vscode.workspace.getConfiguration('chatgpt').get<string>('apiKey');
         const openai = new OpenAI({ apiKey });
+        const model = vscode.workspace.getConfiguration('chatgpt').get<string>('modelRefactor') || 'gpt-4o-mini';
     
         let fileContents = '';
     
@@ -178,7 +222,7 @@ export class GPT4oWebviewViewProvider implements vscode.WebviewViewProvider {
     
         try {
             const completion = await openai.chat.completions.create({
-                model: "gpt-4o-mini",
+                model,
                 messages: [
                     { role: "system", content: "You are a helpful assistant that provides refactors." },
                     { role: "user", content: fullPrompt },

@@ -1,6 +1,6 @@
-# GPT4o Code Assistant - Free Version
+# GPT4free Code Assistant - Free Version
 
-Unlock the power of AI-driven development with **GPT4o Code Assistant**! This VSCode extension brings the capabilities of OpenAI's GPT models directly into your coding environment. Whether you're looking to refactor code, ask questions, or generate new snippets, GPT4o provides intelligent, context-aware insights that enhance your coding productivity.
+Unlock the power of AI-driven development with **GPT4free Code Assistant**! This VSCode extension brings the capabilities of OpenAI's GPT models directly into your coding environment. Whether you're looking to refactor code, ask questions, or generate new snippets, GPT4free provides intelligent, context-aware insights that enhance your coding productivity.
 
 ## Key Features
 
@@ -32,7 +32,7 @@ Unlock the power of AI-driven development with **GPT4o Code Assistant**! This VS
 
 ### Screenshots
 
-![Extension Screenshot](media/printscreen.png)
+![Extension Screenshot](https://i.imgur.com/mZJtXOQ.png)
 
 > This is an example of the chat interface with attached files for context-based AI interactions.
 
@@ -45,11 +45,14 @@ Unlock the power of AI-driven development with **GPT4o Code Assistant**! This VS
 
 This extension contributes the following settings:
 
-- `gpt4oChat.apiKey`: The OpenAI API key used to interact with GPT models.
-- `gpt4oChat.defaultModel`: Set the default model (e.g., `gpt-4`, `gpt-3.5`) that the extension will use.
-- `gpt4oChat.maxTokens`: Configure the maximum token count for GPT responses.
+- `chatgpt.apiKey`: The OpenAI API key used to interact with GPT models.
+- `chatgpt.baseFolder`: Defines the base folder from which to gather files.
+- `chatgpt.modelChat`: Select the ChatGPT model to use for standard interactions (e.g., `gpt-4`, `gpt-3.5-turbo`).
+- `chatgpt.modelChatWithFiles`: Select the ChatGPT model for interactions that include files.
+- `chatgpt.modelRefactor`: Choose the model for requesting code refactoring.
 
-To configure these settings, go to the settings menu (`Ctrl+,` or `Cmd+,`) and search for "gpt4oChat".
+To configure these settings, go to the settings menu (`Ctrl+,` or `Cmd+,`) and search for "chatgpt".
+
 
 ## How to Use
 
@@ -63,17 +66,67 @@ To configure these settings, go to the settings menu (`Ctrl+,` or `Cmd+,`) and s
 - **File Attachments**: Large workspaces with many files may cause performance issues when fetching the list of open files.
 - **Rate Limits**: Be mindful of OpenAI API rate limits based on your account type. Excessive requests may result in delayed responses.
 
+
+## Support the Project
+
+If you enjoy using the GPT4free Code Assistant and want to see even more features added in the future, I would truly appreciate your support! Your contributions will help me continue to improve this extension and keep it available for free to everyone.
+
+If you're interested in supporting the project, you can grab me a coffee at [Buy Me A Coffee](https://buymeacoffee.com/sidjames). Every little bit helps and goes a long way in making this tool better for all of you. Thank you for considering it!
+
+
 ## Release Notes
 
 ### 1.0.0
+- **Initial release of GPT4o Chat.**
+  - Basic integration of GPT functionality with VSCode.
+  - Enabled chat interaction with the OpenAI API.
+  - Fundamental UI setup for the chat interface.
 
-- Initial release of GPT4o Chat.
-- Basic GPT interaction and file attachment support.
+### 1.0.1
+- **Improved User Interface.**
+  - Enhanced styling for the chat interface.
+  - Added responsive design for better usability across different screen sizes.
+  
+### 1.0.2
+- **Performance Enhancements.**
+  - Optimized the message handling to reduce lag during chat interactions.
+  - Improved loading times for webview content.
+
+### 1.0.3
+- **Bug Fixes.**
+  - Fixed issues with file attachment functionality.
+  - Resolved UI glitches that affected user experience.
 
 ### 1.1.0
+- **Major Feature Update.**
+  - Added support for attaching open files to the chat for context-aware interactions.
+  - Implemented automated code refactoring feature, providing code suggestions upon user request.
+  - Introduced a searchable chat history for easy access to previous interactions.
 
-- Added support for file attachments in open files.
-- Enhanced UI to match VS Code's light/dark theme.
+### 1.1.1
+- **User Experience Improvements.**
+  - Added instant prompt copying feature for user queries.
+  - Retained user's last input and file selections to improve workflow continuity.
+  - Enhanced search functionality within the chat history.
+
+### 1.1.2
+- **Configuration Enhancements.**
+  - Introduced additional configuration options to select different GPT models for various tasks (e.g., chat, refactoring).
+  - Expanded the documentation detailing the extension settings for user clarification.
+
+### 1.1.3
+- **Bug Fixes.**
+    - Fixed issues with file attachment functionality.
+    
+### 1.1.4
+- **Readme Enhancements.**
+    - Naming and description enhancements to better explain the features.
+    - Logo updated
+
+### 1.1.5
+- **Support**
+    - Logo updated.
+    - Added but me a coffee to readme and help.
 
 ---
 

@@ -1,13 +1,22 @@
 {
   "name": "gpt-4-free",
-  "displayName": "gpt4o-free",
-  "description": "VSCode integration of GPT 4o",
-  "version": "0.0.2",
+  "displayName": "GPT4free - OpenAI integration simple and free",
+  "description": "VSCode integration of GPT 4",
+  "version": "1.1.5",
+  "publisher": "SiidJames",
+  "author": {
+    "name": "Sid James"
+  },
+  "icon": "media/gpt4free.png",
+  "repository": {
+    "type": "git",
+    "url": "https://https://github.com/CarlosVitorino/gpt4o-free.git"
+  },
   "engines": {
     "vscode": "^1.94.0"
   },
   "categories": [
-    "Other"
+    "Other", "Machine Learning", "Testing"
   ],
   "activationEvents": [
     "onView:gpt4oChatView"
@@ -43,6 +52,39 @@
           "type": "string",
           "default": "src",
           "description": "Base folder from which to gather files for the ChatGPT extension"
+        },
+        "chatgpt.modelChat": {
+            "type": "string",
+            "default": "gpt-4o-mini",
+            "enum": [
+                "gpt-3.5-turbo",
+                "gpt-3.5-turbo-16k",
+                "gpt-4",
+                "gpt-4o-mini"
+            ],
+            "description": "Select the ChatGPT model to use for Ask GPT"
+        },
+        "chatgpt.modelChatWithFiles": {
+            "type": "string",
+            "default": "gpt-4o-mini",
+            "enum": [
+                "gpt-3.5-turbo",
+                "gpt-3.5-turbo-16k",
+                "gpt-4",
+                "gpt-4o-mini"
+            ],
+            "description": "Select the ChatGPT model to use for Ask GPT with files."
+        },
+        "chatgpt.modelRefactor": {
+          "type": "string",
+          "default": "gpt-4o-mini",
+          "enum": [
+              "gpt-3.5-turbo",
+              "gpt-3.5-turbo-16k",
+              "gpt-4",
+              "gpt-4o-mini"
+          ],
+          "description": "Select the ChatGPT model to use for Refactoring code."
         }
       }
     },

@@ -51,3 +51,12 @@
 
 For additional commands and integration features, refer to the VSCode **Command Palette** (`Ctrl + Shift + P`), and search for **GPT 4o Chat**.
 
+## Support the Project
+
+Hey there, amazing users!
+
+If you enjoy using the GPT4free Code Assistant and want to see even more features added in the future, I would truly appreciate your support! Your contributions will help me continue to improve this extension and keep it available for free to everyone.
+
+If you're interested in supporting the project, you can grab me a coffee at [Buy Me A Coffee](https://buymeacoffee.com/sidjames). Every little bit helps and goes a long way in making this tool better for all of you. Thank you for considering it!
+
+Cheers!
