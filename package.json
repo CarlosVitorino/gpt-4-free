@@ -2,7 +2,7 @@
   "name": "gpt-4-free",
   "displayName": "GPT4free - OpenAI integration simple and free",
   "description": "VSCode integration of GPT 4",
-  "version": "1.1.5",
+  "version": "1.1.6",
   "publisher": "SiidJames",
   "author": {
     "name": "Sid James"

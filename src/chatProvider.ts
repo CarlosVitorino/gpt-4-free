@@ -59,7 +59,11 @@ export class GPT4oWebviewViewProvider implements vscode.WebviewViewProvider {
             }
 
             if (message.type === 'copyPrompt') {
-                const response = await this.copyPrompt(message.text, message.files);
+                await this.copyPrompt(message.text, message.files);
+            }
+
+            if (message.type === 'copyFiles') {
+                await this.copyFilesOnly(message.files);
             }
 
             if (message.type === 'loadHelp') {
@@ -272,6 +276,25 @@ export class GPT4oWebviewViewProvider implements vscode.WebviewViewProvider {
             vscode.window.showInformationMessage("Prompt copied to clipboard.");
         } else {
             vscode.window.showErrorMessage("Failed to copy prompt.");
+        }
+    }
+
+    private async copyFilesOnly(files: string[]) {
+        const fileContentsArray = await Promise.all(
+            files.map(async file => {
+                const content = await this.getFileContent(file);
+                // Format however you'd like. For example:
+                return `### File: ${file}\n${content}`;
+            })
+        );
+        const fileContents = fileContentsArray.join('\n\n');
+    
+        if (fileContents) {
+            // Write the attached files to the system clipboard
+            await vscode.env.clipboard.writeText(fileContents);
+            vscode.window.showInformationMessage("Attached files copied to clipboard.");
+        } else {
+            vscode.window.showErrorMessage("Failed to copy attached files.");
         }
     }
 

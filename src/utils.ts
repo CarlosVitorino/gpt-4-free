@@ -47,6 +47,7 @@ export function getWebviewContent(extensionUri: vscode.Uri, webview: vscode.Webv
                         <div id="action-menu" class="action-menu hidden">
                             <div id="clearHistoryOption" class="menu-item">Clear Message History</div>
                             <div id="refactorOption" class="menu-item">Refactor</div>
+                            <div id="copyFilesOption" class="menu-item">Copy Attached Files</div>
                             <div id="copyPromptOption" class="menu-item">Copy Prompt</div>
                             <div id="helpOption" class="menu-item">Help</div>
                         </div>

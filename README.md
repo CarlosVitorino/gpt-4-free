@@ -128,6 +128,11 @@ If you're interested in supporting the project, you can grab me a coffee at [Buy
     - Logo updated.
     - Added but me a coffee to readme and help.
 
+### 1.1.6
+- **New "Copy Attached Files" Option**  
+  - Added a new option in the action menu (the 3-dot menu) to copy the contents of selected attachments to the clipboard.
+  - Ensures quick and convenient access to file content without including the user prompt text.
+
 ---
 
 ## Extension Guidelines
